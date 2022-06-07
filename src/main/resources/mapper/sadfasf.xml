@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.hk.mapper.FileRequestMapper">
+    <resultMap id = "fr" type="com.example.demo.hk.entity.FileRequest">
+        <result column="id_" property="Id"/>
+        <result column="job_name_" property="jobName"/>
+        <result column="job_type_" property="jobType"/>
+        <result column="job_class_" property="jobClass"/>
+        <result column="status_" property="status"/>
+        <result column="cron_expression_" property="cronExpression"/>
+        <result column="location_id_" property="locationId"/>
+        <result column="user_id_" property="userId"/>
+        <result column="video_interval_hours_" property="intervalH"/>
+        <result column="video_interval_minutes_" property="intervalM"/>
+        <result column="video_interval_seconds_" property="intervalS"/>
+        <result column="begin_hours_" property="beginH"/>
+        <result column="begin_minutes_" property="beginM"/>
+        <result column="begin_seconds_" property="beginS"/>
+    </resultMap>
+    <select id="getFileRequestListByOpts" parameterType="int" resultMap="fr">
+        select id_, job_name_, job_type_, job_class_, status_,
+               cron_expression_, location_id_, user_id_,
+               video_interval_hours_, video_interval_minutes_, video_interval_seconds_,
+               begin_hours_, begin_minutes_, begin_seconds_
+        from quartz_file_requests_
+		where status_ = #{status}
+	</select>
+</mapper>

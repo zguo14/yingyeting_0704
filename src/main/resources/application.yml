@@ -1,0 +1,19 @@
+server:
+  port: 8899
+spring:
+  main:
+    allow-bean-definition-overriding: true
+    lazy-initialization: false
+  #数据库连接配置
+  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://172.18.82.41:3307/yingyeting_db
+    username: root
+    password: 123456
+
+#mybatis的相关配置
+mybatis:
+  #mapper配置文件
+#  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.demo.hk.entity
+
