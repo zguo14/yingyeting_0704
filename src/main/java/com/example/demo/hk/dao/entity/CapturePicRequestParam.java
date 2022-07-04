@@ -7,8 +7,9 @@ import org.springframework.stereotype.Component;
 public class CapturePicRequestParam extends Device {
     private int instanceID;
     private String taskType;
-    private String path;
+    private String directory;
     private NativeLong channel;
+    private String jobname;
 
     @Override
     public NativeLong getChannel() {
@@ -28,8 +29,6 @@ public class CapturePicRequestParam extends Device {
         this.jobname = jobname;
     }
 
-    private String jobname;
-
     public String getTaskType() {
         return taskType;
     }
@@ -47,10 +46,10 @@ public class CapturePicRequestParam extends Device {
     }
 
     public String getPath() {
-        return path;
+        return directory;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setDirectory(String directory) {
+        this.directory = directory;
     }
 }

@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 import redis.clients.jedis.StreamEntryID;
 import java.sql.Timestamp;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,15 +21,14 @@ public class VideoFrameServiceController {
     InstanceService instanceService = BeanUtils.getBean(InstanceService.class);
     public static int pre = -1;
 
-    public int catchFrame(CapturePicRequestParam param, NativeLong lRealHandle, Instance instance, Date time, String flag)  {
+    public int catchFrame(CapturePicRequestParam param, NativeLong lRealHandle, Instance instance, String rtspCmd, Date time, String flag)  {
         HCNetTools tool = new HCNetTools();
-        if (tool.getDVRPic(param, lRealHandle) > 0) {
-//        if (1 > 0) {
+//        if (tool.getDVRPic(param, lRealHandle) > 0) {
+        if (tool.getDVRPicByFFmpeg(param, rtspCmd) > 0) {
             VideoFrame frame = new VideoFrame();
             frame.setFlag(flag);
             frame.setInstanceId(param.getInstanceID());
             frame.setTaskType(param.getTaskType());
-//            Date date = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").parse(time);
             frame.setFileTime(time);
             frame.setFilePath(param.getPath());
             frame.setJobname(param.getJobname());
@@ -88,15 +85,6 @@ public class VideoFrameServiceController {
         map.put("job_name", frame.getJobname());
         map.put("task_type", frame.getTaskType());
         map.put("file_path", frame.getFilePath());
-
-//        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        DateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        Timestamp ts = null;
-//        try {
-//            ts = Timestamp.valueOf(sdf2.format(sdf.parse(frame.getFileTime())));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
 
         Timestamp timestamp = new Timestamp(frame.getFileTime().getTime());
 

@@ -1,10 +1,7 @@
 package com.example.demo.web;
 
 import com.example.demo.hk.ClientDemo.*;
-import com.example.demo.hk.dao.entity.CapturePicRequestParam;
-import com.example.demo.hk.dao.entity.FileRequest;
-import com.example.demo.hk.dao.entity.GetStatusRequestParam;
-import com.example.demo.hk.dao.entity.Instance;
+import com.example.demo.hk.dao.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+
+import static cn.hutool.core.net.NetUtil.ping;
 
 @Controller
 @RequestMapping("/dev")
@@ -29,18 +28,20 @@ public class DeviceController {
 	@Autowired
 	VideoFrameSchedulerController scheduler;
 
-//	@ResponseBody
-//	@RequestMapping("/catchPicture")
-//	public Object catchPic(@RequestBody CapturePicRequestParam param){
-//		HCNetTools hcTool = new HCNetTools();
-//		return hcTool.getDVRPic(param);
-//	}
+	@Autowired
+	CameraService cameraService;
 
-	@ResponseBody
-	@RequestMapping("/getStatus")
-	public Object downloadVideo(@RequestBody GetStatusRequestParam param) {
+//	@Scheduled(fixedRate = 3600000)
+	public void updateCameraStatus() {
+		List<Camera> list = cameraService.getCameraList();
 		HCNetTools hcTool = new HCNetTools();
-		return hcTool.getStatus(param);
+		for (Camera c : list) {
+			if(!hcTool.checkStatus(c.getCameraIp())) {
+				cameraService.updateStatus(c.getCameraId(), -1);
+			} else {
+				cameraService.updateStatus(c.getCameraId(), 1);
+			}
+		}
 	}
 
 	// debug0627

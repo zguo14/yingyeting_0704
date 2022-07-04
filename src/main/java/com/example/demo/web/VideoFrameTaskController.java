@@ -17,6 +17,20 @@ public class VideoFrameTaskController extends TimerTask {
 
     private CapturePicRequestParam param;
     private Instance instance;
+    private Date time;
+    private boolean hasPrev;
+    private boolean hasNext;
+    private String flag;
+    private List<NativeLong> handle;
+    private String rtspCmd;
+
+    public String getRtspCmd() {
+        return rtspCmd;
+    }
+
+    public void setRtspCmd(String rtspCmd) {
+        this.rtspCmd = rtspCmd;
+    }
 
     public Instance getInstance() {
         return instance;
@@ -25,12 +39,6 @@ public class VideoFrameTaskController extends TimerTask {
     public void setInstance(Instance instance) {
         this.instance = instance;
     }
-
-    private Date time;
-    private boolean hasPrev;
-    private boolean hasNext;
-    private String flag;
-    private List<NativeLong> handle;
 
     public List<NativeLong> getHandle() {
         return handle;
@@ -83,12 +91,12 @@ public class VideoFrameTaskController extends TimerTask {
     public void run() {
   //        FrameServiceImpl frameService = new FrameServiceImpl();
         VideoFrameServiceController frameService = new VideoFrameServiceController();
-        frameService.catchFrame(param, handle.get(1), instance, time, flag);
-        if (flag.equals("end")) {
-            HCNetTools tool = new HCNetTools();
-            if (tool.resetDVR(handle)) {
-                System.out.println("dvr停止预览、退出登录 成功");
-            }
-        }
+        frameService.catchFrame(param, handle.get(1), instance, rtspCmd, time, flag);
+//        if (flag.equals("end")) {
+//            HCNetTools tool = new HCNetTools();
+//            if (tool.resetDVR(handle)) {
+//                System.out.println("dvr停止预览、退出登录 成功");
+//            }
+//        }
     }
 }

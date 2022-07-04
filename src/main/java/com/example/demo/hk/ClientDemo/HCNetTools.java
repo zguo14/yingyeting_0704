@@ -19,6 +19,8 @@ import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static cn.hutool.core.net.NetUtil.ping;
+
 public class HCNetTools {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	static HCNetSDK hCNetSDK = HCNetSDK.INSTANCE;
@@ -44,13 +46,10 @@ public class HCNetTools {
 	// ffmpeg位置，最好写在配置文件中
 	String ffmpegPath = "C:\\Users\\Zihao\\Desktop\\yingyeting\\ffmpeg-4.3.2-2021-02-27-essentials_build\\bin\\";
 
-	//FRealDataCallBack fRealDataCallBack;//预览回调函数实现
 	public HCNetTools() {
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);//防止被播放窗口(AWT组件)覆盖
 		lUserID = new NativeLong(-1);
 		lPreviewHandle = new NativeLong(-1);
-//		m_lPort = new NativeLongByReference(new NativeLong(-1));
-		//fRealDataCallBack= new FRealDataCallBack();
 	}
 
 	/**
@@ -186,8 +185,6 @@ public class HCNetTools {
 		}
 
 		HCNetSDK.NET_DVR_DEVICEINFO_V30 devinfo = new HCNetSDK.NET_DVR_DEVICEINFO_V30();// 设备信息
-//		param.setIp("10.116.198.21");
-//		param.setIp("10.117.232.190");
 		param.setPort("8000");
 		logger.info(param.getIp() + ":" + param.getPort());
 		hCNetSDK.NET_DVR_SetLogToFile(3, "C:/SdkLog", false);
@@ -239,18 +236,15 @@ public class HCNetTools {
 	 *
 	 * @param
 	 */
-	public int getDVRPicByFFmpeg(CapturePicRequestParam param, NativeLong lRealHandle) {
+	public int getDVRPicByFFmpeg(CapturePicRequestParam param, String rtspCmd) {
 		try {
 			String command = ffmpegPath;
-			command += "ffmpeg -y -i rtsp://";
-			command += param.getAccount() + ":" + param.getPassword() + "@" + param.getIp() + ":" + param.getPort();
-			command += "/h264/ch1/main/av_stream";
-			command += " -vframes 1 ";
-			Date date=new Date();
+			command += rtspCmd;
+			Date date = new Date();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-			String filePath = param.getPath() + param.getName() + "-" + sdf.format(date) + ".jpg";
-			command += filePath;
-			System.out.println("ffmpeg截图命令：" + command);
+			String fileName = param.getPath() + param.getName() + "-" + sdf.format(date) + ".jpg";
+			command += " " + fileName;
+			logger.info("ffmpeg截图命令：" + command);
 			// 运行cmd命令，获取其进程
 			process = Runtime.getRuntime().exec(command);
 			// 输出控制台日志
@@ -438,16 +432,6 @@ public class HCNetTools {
 
 	//调用ffmpeg拉流
 	public int downloadCurrentVideo (DownloadVideoRequestParam param, Camera camera, Long start, Long end, int gap) {
-//		int second = (int) (Long.valueOf(param.getBeginning()) - System.currentTimeMillis()/1000L);
-//		System.out.println("start to sleep: " + second + " seconds");
-//		if (second > 0) {
-//			try {
-//				Thread.sleep( second * 1000);
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
-//		}
-
 		if (gap > 0) {
 			System.out.println("start to sleep: " + gap + " seconds");
 			try {
@@ -494,6 +478,10 @@ public class HCNetTools {
 		return 1;
 	}
 
+	public boolean checkStatus(String ip) {
+		return ping(ip);
+	}
+
 	public int getStatus(GetStatusRequestParam param) {
 		//初始化
 		boolean initFlag = hCNetSDK.NET_DVR_Init();
@@ -521,6 +509,7 @@ public class HCNetTools {
 			return devwork.dwDeviceStatic; // 0正常，1CPU占用率过高，2硬件错误，3未知
 		}
 	}
+
 
 	/* *
 	 * @Description:  获取录像文件信息
