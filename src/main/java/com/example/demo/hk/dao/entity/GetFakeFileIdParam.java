@@ -1,4 +1,4 @@
-package com.example.demo.hk.entity;
+package com.example.demo.hk.dao.entity;
 
 public class GetFakeFileIdParam {
     private String taskType;

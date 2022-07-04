@@ -1,10 +1,21 @@
-package com.example.demo.hk.entity;
+package com.example.demo.hk.dao.entity;
+
+import java.util.Date;
 
 public class VideoFrame {
 //    private boolean hasPrev;
 ////    private boolean hasNext;
     private String flag;
     private int instanceId;
+    private String jobname;
+
+    public String getJobname() {
+        return jobname;
+    }
+
+    public void setJobname(String jobname) {
+        this.jobname = jobname;
+    }
 
     public String getFlag() {
         return flag;
@@ -31,7 +42,7 @@ public class VideoFrame {
 
     private String taskType;
     private String filePath;
-    private String fileTime;
+    private Date fileTime;
 
     public String getTaskType() {
         return taskType;
@@ -49,11 +60,11 @@ public class VideoFrame {
         this.filePath = filePath;
     }
 
-    public String getFileTime() {
+    public Date getFileTime() {
         return fileTime;
     }
 
-    public void setFileTime(String fileTime) {
+    public void setFileTime(Date fileTime) {
         this.fileTime = fileTime;
     }
 

@@ -1,13 +1,6 @@
 package com.example.demo.web;
 
 
-import com.example.demo.hk.ClientDemo.InstanceService;
-import com.example.demo.hk.entity.Instance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Controller;
-
 //@Controller
 //@EnableScheduling
 //public class TaskSchedulerController {

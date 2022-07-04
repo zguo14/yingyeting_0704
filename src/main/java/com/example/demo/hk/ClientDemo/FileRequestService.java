@@ -1,8 +1,6 @@
 package com.example.demo.hk.ClientDemo;
 
-import com.example.demo.hk.entity.FileRequest;
-import com.example.demo.hk.entity.Instance;
-import org.springframework.stereotype.Service;
+import com.example.demo.hk.dao.entity.FileRequest;
 
 import java.util.List;
 

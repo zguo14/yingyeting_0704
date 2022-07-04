@@ -1,7 +1,7 @@
 package com.example.demo.hk.ClientDemo;
 
 import com.example.demo.hk.dao.FileRequestDao;
-import com.example.demo.hk.entity.FileRequest;
+import com.example.demo.hk.dao.entity.FileRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

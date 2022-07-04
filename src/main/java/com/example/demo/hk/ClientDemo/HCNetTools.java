@@ -2,16 +2,16 @@ package com.example.demo.hk.ClientDemo;
 
 
 import cc.eguid.FFmpegCommandManager.FFmpegManager;
-import com.example.demo.hk.entity.*;
-import com.sun.jna.Native;
+import com.example.demo.hk.dao.entity.*;
+//import com.example.demo.hk.entity.*;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.ByteByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.NativeLongByReference;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.io.*;
@@ -22,7 +22,7 @@ import java.util.*;
 public class HCNetTools {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	static HCNetSDK hCNetSDK = HCNetSDK.INSTANCE;
-	//static PlayCtrl playControl = PlayCtrl.INSTANCE;
+	static PlayCtrl playControl = PlayCtrl.INSTANCE;
 
 	HCNetSDK.NET_DVR_DEVICEINFO_V30 m_strDeviceInfo;//设备信息
 	HCNetSDK.NET_DVR_IPPARACFG m_strIpparaCfg;//IP参数
@@ -34,7 +34,8 @@ public class HCNetTools {
 	NativeLong lUserID;//用户句柄
 	NativeLong loadHandle;//下载句柄
 	NativeLong lPreviewHandle;//预览句柄
-	NativeLongByReference m_lPort;//回调预览时播放库端口指针
+	static NativeLongByReference m_lPort = new NativeLongByReference(new NativeLong(-1));
+	static FRealDataCallBack fRealDataCallBack = new FRealDataCallBack();
 
 	FFmpegManager manager;//rstp转rmtp工具
 
@@ -48,7 +49,7 @@ public class HCNetTools {
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);//防止被播放窗口(AWT组件)覆盖
 		lUserID = new NativeLong(-1);
 		lPreviewHandle = new NativeLong(-1);
-		m_lPort = new NativeLongByReference(new NativeLong(-1));
+//		m_lPort = new NativeLongByReference(new NativeLong(-1));
 		//fRealDataCallBack= new FRealDataCallBack();
 	}
 
@@ -151,79 +152,122 @@ public class HCNetTools {
 		hCNetSDK.NET_DVR_Cleanup();
 	}
 
-
 	/**
 	 * 抓拍图片
 	 *
 	 * @param
 	 */
-	public int getDVRPic(CapturePicRequestParam param) {
-		NativeLong chanLong = param.getChannel();
-		if (!hCNetSDK.NET_DVR_Init()) {
-			logger.warn("hksdk(抓图)-海康sdk初始化失败!");
-			return -1;
-		}
-		HCNetSDK.NET_DVR_DEVICEINFO_V30 devinfo = new HCNetSDK.NET_DVR_DEVICEINFO_V30();// 设备信息
-		//注册设备
-		lUserID = hCNetSDK.NET_DVR_Login_V30(param.getIp(), Short.valueOf(param.getPort()), param.getAccount(), param.getPassword(), devinfo);// 返回一个用户编号，同时将设备信息写入devinfo
+	public int getDVRPic(CapturePicRequestParam param, NativeLong lRealHandle) {
 
-		if (lUserID.intValue() < 0) {
-			logger.warn("hksdk(抓图)-设备注册失败,错误码:" + hCNetSDK.NET_DVR_GetLastError());
-			return -2;
-		}
-		HCNetSDK.NET_DVR_WORKSTATE_V30 devwork = new HCNetSDK.NET_DVR_WORKSTATE_V30();
-		if (!hCNetSDK.NET_DVR_GetDVRWorkState_V30(lUserID, devwork)) {
-			// 返回Boolean值，判断是否获取设备能力
-			logger.info("hksdk(抓图)-返回设备状态失败");
-			return -3;
-		}
-		//图片质量
-		HCNetSDK.NET_DVR_JPEGPARA jpeg = new HCNetSDK.NET_DVR_JPEGPARA();
-		//设置图片分辨率
-		jpeg.wPicSize = 5;
-		//设置图片质量
-		jpeg.wPicQuality = 0;
-		IntByReference a = new IntByReference();
-		//设置图片大小
-		ByteBuffer jpegBuffer = ByteBuffer.allocate(1024 * 1024);
-		//String jpegBuffer ="1024 * 1024";
 		Date date=new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+		String filePath = param.getPath() + param.getName() + "-" + sdf.format(date) + ".jpg";
+		logger.info("filePath:" + filePath);
 
-		File file = new File(param.getPath() + param.getName() + "-" + sdf.format(date) + ".jpg");
-		// 抓图到内存，单帧数据捕获并保存成JPEG存放在指定的内存空间中
-		//需要加入通道
-		boolean is = hCNetSDK.NET_DVR_CaptureJPEGPicture_NEW(lUserID, chanLong, jpeg, jpegBuffer, 1024 * 1024, a);
+		boolean is = hCNetSDK.NET_DVR_CapturePicture(lRealHandle, filePath);
 		if (is) {
 			logger.info("hksdk(抓图)-结果状态值(0表示成功):" + hCNetSDK.NET_DVR_GetLastError());
-			//存储到本地
-			BufferedOutputStream outputStream = null;
-			try {
-				outputStream = new BufferedOutputStream(new FileOutputStream(file));
-				outputStream.write(jpegBuffer.array(), 0, a.getValue());
-				outputStream.flush();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (outputStream != null) {
-					try {
-						outputStream.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-
 		} else {
 			logger.info("hksdk(抓图)-抓取失败,错误码:" + hCNetSDK.NET_DVR_GetLastError());
 			return -4;
 		}
 
-		hCNetSDK.NET_DVR_Logout(lUserID);//退出登录
 		return 1;
-		//hcNetSDK.NET_DVR_Cleanup();
+	}
+
+	public List<NativeLong> initDVR(CapturePicRequestParam param) {
+
+		List<NativeLong> resp = new ArrayList<>();
+
+		if (!hCNetSDK.NET_DVR_Init()) {
+			logger.warn("hksdk(抓图)-海康sdk初始化失败!");
+			resp.add(new NativeLong(-1));
+			return resp;
+		}
+
+		HCNetSDK.NET_DVR_DEVICEINFO_V30 devinfo = new HCNetSDK.NET_DVR_DEVICEINFO_V30();// 设备信息
+//		param.setIp("10.116.198.21");
+//		param.setIp("10.117.232.190");
+		param.setPort("8000");
+		logger.info(param.getIp() + ":" + param.getPort());
+		hCNetSDK.NET_DVR_SetLogToFile(3, "C:/SdkLog", false);
+
+		lUserID = hCNetSDK.NET_DVR_Login_V30(param.getIp(), Short.valueOf(param.getPort()), param.getAccount(), param.getPassword(), devinfo);// 返回一个用户编号，同时将设备信息写入devinfo
+		if (lUserID.intValue() < 0) {
+			logger.warn("hksdk(抓图)-设备注册失败,错误码:" + hCNetSDK.NET_DVR_GetLastError());
+			resp.add(new NativeLong(-2));
+			return resp;
+		}
+		resp.add(lUserID);
+
+		HCNetSDK.NET_DVR_WORKSTATE_V30 devwork = new HCNetSDK.NET_DVR_WORKSTATE_V30();
+		if (!hCNetSDK.NET_DVR_GetDVRWorkState_V30(lUserID, devwork)) {
+			// 返回Boolean值，判断是否获取设备能力
+			logger.info("hksdk(抓图)-返回设备状态失败");
+			resp.add(new NativeLong(-3));
+			return resp;
+		}
+
+		HCNetSDK.NET_DVR_CLIENTINFO m_strClientInfo = new HCNetSDK.NET_DVR_CLIENTINFO();
+		m_strClientInfo.lChannel = new NativeLong(1);// 设置通道
+		m_strClientInfo.hPlayWnd = null;
+
+		NativeLong lRealHandle = hCNetSDK.NET_DVR_RealPlay_V30(lUserID, m_strClientInfo, fRealDataCallBack, null, true);
+		logger.info("lRealHandle:" + lRealHandle);
+		if (lRealHandle.intValue() != 0) {
+			logger.info("hksdk(抓图)-预览失败");
+			resp.add(new NativeLong(-4));
+			return resp;
+		}
+		resp.add(lRealHandle);
+
+		return resp;
+	}
+
+	public boolean resetDVR(List<NativeLong> handle) {
+
+		boolean flag1 = hCNetSDK.NET_DVR_StopRealPlay(handle.get(1)); // 停止预览
+		boolean flag2 = hCNetSDK.NET_DVR_Logout(handle.get(0)); // 用户退出登录
+
+		return flag1 && flag2;
+
+	}
+
+
+	/**
+	 * FFmpeg抓拍图片
+	 *
+	 * @param
+	 */
+	public int getDVRPicByFFmpeg(CapturePicRequestParam param, NativeLong lRealHandle) {
+		try {
+			String command = ffmpegPath;
+			command += "ffmpeg -y -i rtsp://";
+			command += param.getAccount() + ":" + param.getPassword() + "@" + param.getIp() + ":" + param.getPort();
+			command += "/h264/ch1/main/av_stream";
+			command += " -vframes 1 ";
+			Date date=new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+			String filePath = param.getPath() + param.getName() + "-" + sdf.format(date) + ".jpg";
+			command += filePath;
+			System.out.println("ffmpeg截图命令：" + command);
+			// 运行cmd命令，获取其进程
+			process = Runtime.getRuntime().exec(command);
+			// 输出控制台日志
+			BufferedReader br = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+			while((line = br.readLine()) != null) {
+				System.out.println("截图信息[" + line + "]");
+			}
+			if(process != null) {
+				process.destroy();
+			}
+			System.out.println("销毁截图进程");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return 1;
 	}
 
 	/* *
@@ -586,6 +630,42 @@ public class HCNetTools {
 		structTime.dwMinute = Integer.parseInt(times[4]);
 		structTime.dwSecond = Integer.parseInt(times[5]);
 		return structTime;
+	}
+
+	// 暂时先不传null
+	static class FRealDataCallBack implements HCNetSDK.FRealDataCallBack_V30 {
+		@Override
+		public void invoke(NativeLong lRealHandle, int dwDataType, ByteByReference pBuffer, int dwBufSize, Pointer pUser) {
+			switch (dwDataType) {
+				case HCNetSDK.NET_DVR_SYSHEAD: //系统头
+					if (!playControl.PlayM4_GetPort(m_lPort)) //获取播放库未使用的通道号
+					{
+						break;
+					}
+					if (dwBufSize > 0) {
+						if (!playControl.PlayM4_SetStreamOpenMode(m_lPort.getValue(), PlayCtrl.STREAME_REALTIME))  //设置实时流播放模式
+						{
+							break;
+						}
+						if (!playControl.PlayM4_OpenStream(m_lPort.getValue(), pBuffer, dwBufSize, 1024 * 1024)) //打开流接口
+						{
+							break;
+						}
+						if (!playControl.PlayM4_Play(m_lPort.getValue(), null)) //播放开始
+						{
+							break;
+						}
+
+					}
+				case HCNetSDK.NET_DVR_STREAMDATA:   //码流数据
+					if ((dwBufSize > 0) && (m_lPort.getValue().intValue() != -1)) {
+						if (!playControl.PlayM4_InputData(m_lPort.getValue(), pBuffer, dwBufSize))  //输入流数据
+						{
+							break;
+						}
+					}
+			}
+		}
 	}
 
 

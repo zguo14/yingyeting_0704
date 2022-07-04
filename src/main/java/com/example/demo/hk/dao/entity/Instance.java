@@ -1,4 +1,4 @@
-package com.example.demo.hk.entity;
+package com.example.demo.hk.dao.entity;
 import java.util.Date;
 public class Instance {
     private int id;

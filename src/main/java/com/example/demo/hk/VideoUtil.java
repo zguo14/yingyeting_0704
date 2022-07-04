@@ -3,7 +3,7 @@ package com.example.demo.hk;
 import cc.eguid.FFmpegCommandManager.FFmpegManager;
 import cc.eguid.FFmpegCommandManager.FFmpegManagerImpl;
 import com.example.demo.hk.ClientDemo.HCNetTools;
-import com.example.demo.hk.entity.Device;
+import com.example.demo.hk.dao.entity.Device;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;

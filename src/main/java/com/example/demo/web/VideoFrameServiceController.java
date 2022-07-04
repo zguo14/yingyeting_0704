@@ -1,12 +1,19 @@
 package com.example.demo.web;
 
+import com.example.demo.hk.ClientDemo.HCNetTools;
 import com.example.demo.hk.ClientDemo.InstanceService;
-import com.example.demo.hk.entity.CapturePicRequestParam;
-import com.example.demo.hk.entity.Instance;
-import com.example.demo.hk.entity.VideoFrame;
+import com.example.demo.hk.dao.entity.CapturePicRequestParam;
+import com.example.demo.hk.dao.entity.Instance;
+import com.example.demo.hk.dao.entity.VideoFrame;
 import com.example.demo.hk.redis.RedisServiceImpl;
+import com.sun.jna.NativeLong;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.StreamEntryID;
+import java.sql.Timestamp;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,16 +23,18 @@ public class VideoFrameServiceController {
     InstanceService instanceService = BeanUtils.getBean(InstanceService.class);
     public static int pre = -1;
 
-    public int catchFrame(CapturePicRequestParam param, Instance instance, String time, String flag) {
-//        HCNetTools tool = new HCNetTools();
-//        if (tool.getDVRPic(param) > 0) {
-        if (1 > 0) {
+    public int catchFrame(CapturePicRequestParam param, NativeLong lRealHandle, Instance instance, Date time, String flag)  {
+        HCNetTools tool = new HCNetTools();
+        if (tool.getDVRPic(param, lRealHandle) > 0) {
+//        if (1 > 0) {
             VideoFrame frame = new VideoFrame();
             frame.setFlag(flag);
             frame.setInstanceId(param.getInstanceID());
             frame.setTaskType(param.getTaskType());
+//            Date date = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").parse(time);
             frame.setFileTime(time);
             frame.setFilePath(param.getPath());
+            frame.setJobname(param.getJobname());
             if (offerFrameToQueue(frame) < 0 ) {
                 System.out.println("offer to queue err");
                 return -2;
@@ -49,14 +58,18 @@ public class VideoFrameServiceController {
                     newInstance.setStatus(1);
                     newInstance.setIsLatest(1);
                     pre = instanceService.insert(newInstance);
-                    instanceService.update(instance.getId());
+                    int id = instanceService.getInstanceList(instance.getJobName(), instance.getIsLatest()).get(0).getId();
+//                    instanceService.update(instance.getId());
+                    instanceService.update(id);
                     System.out.println("-----------Instance:"+ instance.getId() + ", First frame inserted and updated--------------");
                 }
                 if (flag.equals("end")) {
                     newInstance.setStatus(2);
                     newInstance.setIsLatest(1);
+                    int id = instanceService.getInstanceList(instance.getJobName(), instance.getIsLatest()).get(0).getId();
+                    instanceService.update(id);
+//                    instanceService.update(pre);
                     pre = instanceService.insert(newInstance);
-                    instanceService.update(pre);
                     System.out.println("-----------Instance:"+ instance.getId() + ", Last frame inserted and updated--------------");
                 }
             }
@@ -72,8 +85,10 @@ public class VideoFrameServiceController {
         Map<String, String> map = new HashMap<>();
         map.put("flag", frame.getFlag());
         map.put("instance_id", String.valueOf(frame.getInstanceId()));
+        map.put("job_name", frame.getJobname());
         map.put("task_type", frame.getTaskType());
         map.put("file_path", frame.getFilePath());
+
 //        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //        DateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //        Timestamp ts = null;
@@ -82,7 +97,10 @@ public class VideoFrameServiceController {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-        map.put("file_time", frame.getFileTime());
+
+        Timestamp timestamp = new Timestamp(frame.getFileTime().getTime());
+
+        map.put("file_time", timestamp.toString());
         StreamEntryID id = redis.xadd("frame_queue", StreamEntryID.NEW_ENTRY, map);
         System.out.println("successfully offered to queue, instance: "
                 + frame.getInstanceId() + ", time point:" + frame.getFileTime()

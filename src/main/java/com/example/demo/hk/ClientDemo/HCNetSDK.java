@@ -39,7 +39,7 @@ public interface HCNetSDK extends StdCallLibrary {
 //	String teststr = CommonKit.getWebPath();
 //	HCNetSDK INSTANCE = (HCNetSDK) Native.loadLibrary(CommonKit.getWebPath()+"HCNetSDK",HCNetSDK.class);
 //	HCNetSDK INSTANCE = (HCNetSDK) Native.loadLibrary("C:\\Users\\Zihao\\Desktop\\yingyeting\\hksdk-master\\target\\classes\\lib\\hk\\HCNetSDK.dll", HCNetSDK.class);
-	HCNetSDK INSTANCE = (HCNetSDK) Native.loadLibrary("C:\\Users\\Zihao\\Desktop\\yingyeting\\hksdk-master\\HCNetSDK.dll", HCNetSDK.class);
+	HCNetSDK INSTANCE = (HCNetSDK) Native.loadLibrary("C:\\hksdk-master\\HCNetSDK.dll", HCNetSDK.class);
 
 	/***宏定义***/
 	//常量
@@ -3081,6 +3081,7 @@ EMAIL参数结构
 
 	//启用日志文件写入接口
 	boolean  NET_DVR_SetLogToFile(boolean bLogEnable , String  strLogDir, boolean bAutoDel );
+	boolean  NET_DVR_SetLogToFile(int nLogLevel , String  strLogDir, boolean bAutoDel );
 	boolean  NET_DVR_GetSDKState( NET_DVR_SDKSTATE pSDKState);
 	boolean  NET_DVR_GetSDKAbility( NET_DVR_SDKABL pSDKAbl);
 	boolean  NET_DVR_GetPTZProtocol(NativeLong lUserID, NET_DVR_PTZCFG  pPtzcfg);
@@ -3090,6 +3091,9 @@ EMAIL参数结构
 
 	boolean  NET_DVR_SetRtspConfig(NativeLong lUserID, int dwCommand,  NET_DVR_RTSPCFG lpInBuffer, int dwInBufferSize);
 	boolean  NET_DVR_GetRtspConfig(NativeLong lUserID, int dwCommand,  NET_DVR_RTSPCFG lpOutBuffer, int dwOutBufferSize);
+
+//	// 设置超时时间
+//	boolean NET_DVR_SetRecvTimeOut(int dwWaitTime, int dwTryTimes);
 }
 
 
@@ -3098,7 +3102,7 @@ interface PlayCtrl extends StdCallLibrary
 {
 //	PlayCtrl INSTANCE = (PlayCtrl) Native.loadLibrary(CommonKit.getWebPath()+"PlayCtrl", PlayCtrl.class);
 //	PlayCtrl INSTANCE = (PlayCtrl) Native.loadLibrary("C:\\Users\\Zihao\\Desktop\\yingyeting\\hksdk-master\\target\\classes\\lib\\hk\\PlayCtrl.dll", PlayCtrl.class);
-	PlayCtrl INSTANCE = (PlayCtrl) Native.loadLibrary("C:\\Users\\Zihao\\Desktop\\yingyeting\\hksdk-master\\PlayCtrl.dll", PlayCtrl.class);
+	PlayCtrl INSTANCE = (PlayCtrl) Native.loadLibrary("C:\\hksdk-master\\PlayCtrl.dll", PlayCtrl.class);
 
 
 

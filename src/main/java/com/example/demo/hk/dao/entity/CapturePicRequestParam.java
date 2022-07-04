@@ -1,5 +1,6 @@
-package com.example.demo.hk.entity;
+package com.example.demo.hk.dao.entity;
 
+import com.sun.jna.NativeLong;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -7,6 +8,27 @@ public class CapturePicRequestParam extends Device {
     private int instanceID;
     private String taskType;
     private String path;
+    private NativeLong channel;
+
+    @Override
+    public NativeLong getChannel() {
+        return channel;
+    }
+
+    @Override
+    public void setChannel(NativeLong channel) {
+        this.channel = channel;
+    }
+
+    public String getJobname() {
+        return jobname;
+    }
+
+    public void setJobname(String jobname) {
+        this.jobname = jobname;
+    }
+
+    private String jobname;
 
     public String getTaskType() {
         return taskType;

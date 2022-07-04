@@ -1,6 +1,6 @@
 package com.example.demo.hk.dao;
 
-import com.example.demo.hk.entity.FileRequest;
+import com.example.demo.hk.dao.entity.FileRequest;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;

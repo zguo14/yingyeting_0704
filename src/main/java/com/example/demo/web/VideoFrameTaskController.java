@@ -1,10 +1,13 @@
 package com.example.demo.web;
 
-import com.example.demo.hk.entity.CapturePicRequestParam;
-import com.example.demo.hk.entity.Instance;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.hk.ClientDemo.HCNetTools;
+import com.example.demo.hk.dao.entity.CapturePicRequestParam;
+import com.example.demo.hk.dao.entity.Instance;
+import com.sun.jna.NativeLong;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+import java.util.List;
 import java.util.TimerTask;
 
 @Component
@@ -23,10 +26,19 @@ public class VideoFrameTaskController extends TimerTask {
         this.instance = instance;
     }
 
-    private String time;
+    private Date time;
     private boolean hasPrev;
     private boolean hasNext;
     private String flag;
+    private List<NativeLong> handle;
+
+    public List<NativeLong> getHandle() {
+        return handle;
+    }
+
+    public void setHandle(List<NativeLong> handle) {
+        this.handle = handle;
+    }
 
     public String getFlag() {
         return flag;
@@ -44,11 +56,11 @@ public class VideoFrameTaskController extends TimerTask {
         this.param = param;
     }
 
-    public String getTime() {
+    public Date getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(Date time) {
         this.time = time;
     }
 
@@ -69,8 +81,14 @@ public class VideoFrameTaskController extends TimerTask {
 
     @Override
     public void run() {
-//        FrameServiceImpl frameService = new FrameServiceImpl();
+  //        FrameServiceImpl frameService = new FrameServiceImpl();
         VideoFrameServiceController frameService = new VideoFrameServiceController();
-        frameService.catchFrame(param, instance, time, flag);
+        frameService.catchFrame(param, handle.get(1), instance, time, flag);
+        if (flag.equals("end")) {
+            HCNetTools tool = new HCNetTools();
+            if (tool.resetDVR(handle)) {
+                System.out.println("dvr停止预览、退出登录 成功");
+            }
+        }
     }
 }

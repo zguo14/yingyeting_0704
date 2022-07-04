@@ -1,7 +1,7 @@
 package com.example.demo.hk.ClientDemo;
 
 import com.example.demo.hk.dao.InstanceDao;
-import com.example.demo.hk.entity.Instance;
+import com.example.demo.hk.dao.entity.Instance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -93,6 +93,18 @@ public class InstanceServiceImpl implements InstanceService {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("查询instance list by status失败");
+        }
+        return null;
+    }
+
+    @Override
+    public List<Instance> getInstanceList(String jobName, int isLatest) {
+        try {
+            List<Instance> l = instanceDao.getInstanceList(jobName, isLatest);
+            return l;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("查询instance list by name失败");
         }
         return null;
     }
