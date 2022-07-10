@@ -15,6 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.*;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -238,7 +241,8 @@ public class HCNetTools {
 	 */
 	public int getDVRPicByFFmpeg(CapturePicRequestParam param, String rtspCmd) {
 		try {
-			String command = ffmpegPath;
+//			String command = ffmpegPath;
+			String command = "";
 			command += rtspCmd;
 			Date date = new Date();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
@@ -478,8 +482,15 @@ public class HCNetTools {
 		return 1;
 	}
 
-	public boolean checkStatus(String ip) {
-		return ping(ip);
+	public String checkStatus(String ip, int port) {
+		try {
+			Socket socket = new Socket();
+			socket.connect(new InetSocketAddress(ip,port), 2000);
+			return "正常";
+		}  catch (IOException e) {
+			e.printStackTrace();
+		}
+		return "端口不可达";
 	}
 
 	public int getStatus(GetStatusRequestParam param) {

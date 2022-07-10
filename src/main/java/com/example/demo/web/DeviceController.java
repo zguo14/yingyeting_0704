@@ -36,11 +36,7 @@ public class DeviceController {
 		List<Camera> list = cameraService.getCameraList();
 		HCNetTools hcTool = new HCNetTools();
 		for (Camera c : list) {
-			if(!hcTool.checkStatus(c.getCameraIp())) {
-				cameraService.updateStatus(c.getCameraId(), -1);
-			} else {
-				cameraService.updateStatus(c.getCameraId(), 1);
-			}
+			cameraService.updateStatus(c.getCameraId(), hcTool.checkStatus(c.getCameraIp(), Integer.parseInt(c.getCameraPort())));
 		}
 	}
 

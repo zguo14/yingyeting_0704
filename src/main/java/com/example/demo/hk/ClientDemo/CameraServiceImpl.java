@@ -35,7 +35,7 @@ public class CameraServiceImpl implements CameraService {
     }
 
     @Override
-    public void updateStatus(int cameraId, int status) {
+    public void updateStatus(int cameraId, String status) {
         try {
             cameraDao.updateStatus(cameraId, status);
         } catch (Exception e) {

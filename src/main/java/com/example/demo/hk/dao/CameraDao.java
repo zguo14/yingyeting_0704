@@ -43,6 +43,6 @@ public interface CameraDao {
 
     String updateQuery = "update camera_ set status_ = #{status} where id_ = #{cameraId}";
     @Update(updateQuery)
-    void updateStatus(int cameraId, int status);
+    void updateStatus(int cameraId, String status);
 
 }
