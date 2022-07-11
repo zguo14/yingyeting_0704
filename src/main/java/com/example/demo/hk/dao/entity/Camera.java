@@ -8,6 +8,24 @@ public class Camera {
     private String state;
     private String taskType;
     private String cameraPort;
+    private String rtspCmd;
+    private int channel;
+
+    public int getChannel() {
+        return channel;
+    }
+
+    public void setChannel(int channel) {
+        this.channel = channel;
+    }
+
+    public String getRtspCmd() {
+        return rtspCmd;
+    }
+
+    public void setRtspCmd(String rtspCmd) {
+        this.rtspCmd = rtspCmd;
+    }
 
     public String getCameraName() {
         return cameraName;

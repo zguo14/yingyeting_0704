@@ -55,9 +55,11 @@ public interface CameraDao {
     @Results({
             @Result(column="id_", property="cameraId"),
             @Result(column="ip_", property="cameraIp"),
-            @Result(column = "camera_id_", property="locationId"),
-            @Result(column = "camera_id_", property="cameraId"),
+            @Result(column = "location_id_", property="locationId"),
+            @Result(column = "name", property="cameraName"),
             @Result(column="task_type_",property="taskType"),
+            @Result(column="state_",property="state"),
+            @Result(column="port_",property="cameraPort"),
             @Result(column="channel_" ,property="channel"),
             @Result(column="rtsp_cmd_" ,property="rtspCmd"),
 

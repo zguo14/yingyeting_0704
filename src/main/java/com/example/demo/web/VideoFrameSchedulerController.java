@@ -52,8 +52,8 @@ public class VideoFrameSchedulerController {
                 VideoFrameTaskController task = new VideoFrameTaskController();
                 CapturePicRequestParam param = new CapturePicRequestParam();
 //                Camera c = cameraService.getCameraById(Integer.parseInt(String.valueOf(fr.getLocationId())));
-                param.setIp(c.getCameraIp());
-                param.setPort(c.getCameraPort());
+//                param.setIp(c.getCameraIp());
+//                param.setPort(c.getCameraPort());
 
 
 //                param.setChannel(new NativeLong(0));
@@ -64,10 +64,13 @@ public class VideoFrameSchedulerController {
                 param.setJobname(fr.getJobName());
                 String directory = "C:\\Users\\luoyang\\Desktop\\test_demo\\" + param.getTaskType() + "\\";
                 param.setDirectory(directory);
-                task.setParam(param);
+
                 task.setTime(start);
-                CameraTask ct = cameraTaskService.getCameraTaskByOpts(Integer.parseInt(String.valueOf(fr.getLocationId())), fr.getJobType());
-                task.setRtspCmd(ct.getRtspCmd());
+                Camera c = cameraService.getCameraByOpts(Integer.parseInt(String.valueOf(fr.getLocationId())), fr.getJobType());
+                param.setIp(c.getCameraIp());
+                param.setPort(c.getCameraPort());
+                task.setParam(param);
+                task.setRtspCmd(c.getRtspCmd());
                 if (i == 0) {
                     task.setFlag("start");
 //                    HCNetTools tool = new HCNetTools();

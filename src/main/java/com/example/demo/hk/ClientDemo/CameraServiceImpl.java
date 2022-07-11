@@ -43,4 +43,16 @@ public class CameraServiceImpl implements CameraService {
             System.out.println("更新camera status失败");
         }
     }
+
+    @Override
+    public Camera getCameraByOpts(int locationId, String taskType) {
+
+        try {
+            return cameraDao.getCameraByOpts(locationId, taskType);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("查询camera info失败");
+        }
+        return null;
+    }
 }

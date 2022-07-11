@@ -8,4 +8,5 @@ public interface CameraService {
     Camera getCameraById(int cameraId);
     List<Camera> getCameraList();
     void updateStatus(int cameraId, String status);
+    Camera getCameraByOpts(int locationId, String taskType);
 }
