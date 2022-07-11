@@ -13,10 +13,10 @@ public class CameraTaskServiceImpl implements CameraTaskService {
     @Autowired
     private CameraTaskDao cameraTaskDao;
     @Override
-    public CameraTask getCameraTaskByOpts(int cameraId, String taskType) {
+    public CameraTask getCameraTaskByOpts(int locationId, String taskType) {
 
         try {
-            return cameraTaskDao.getCameraTaskByOpts(cameraId, taskType);
+            return cameraTaskDao.getCameraTaskByOpts(locationId, taskType);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("查询camera task失败");

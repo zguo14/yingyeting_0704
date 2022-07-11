@@ -1,6 +1,7 @@
 package com.example.demo.hk.dao;
 
 import com.example.demo.hk.dao.entity.Camera;
+import com.example.demo.hk.dao.entity.CameraTask;
 import com.example.demo.hk.dao.entity.FileRequest;
 import org.apache.ibatis.annotations.*;
 
@@ -44,5 +45,23 @@ public interface CameraDao {
     String updateQuery = "update camera_ set status_ = #{status} where id_ = #{cameraId}";
     @Update(updateQuery)
     void updateStatus(int cameraId, String status);
+
+
+    String query3 =
+            "select " + "id_, ip_, location_id_, name_, state_, task_type_, port_, channel_, rtsp_cmd_" +
+                    " from " + "camera_" +
+                    " where " + "location_id_ = #{locationId} and task_type_ = #{taskType}";
+    @Select(query3)
+    @Results({
+            @Result(column="id_", property="cameraId"),
+            @Result(column="ip_", property="cameraIp"),
+            @Result(column = "camera_id_", property="locationId"),
+            @Result(column = "camera_id_", property="cameraId"),
+            @Result(column="task_type_",property="taskType"),
+            @Result(column="channel_" ,property="channel"),
+            @Result(column="rtsp_cmd_" ,property="rtspCmd"),
+
+    })
+    Camera getCameraByOpts(int locationId, String taskType);
 
 }

@@ -51,9 +51,11 @@ public class VideoFrameSchedulerController {
                 Timer timer = new Timer();
                 VideoFrameTaskController task = new VideoFrameTaskController();
                 CapturePicRequestParam param = new CapturePicRequestParam();
-                Camera c = cameraService.getCameraById(Integer.parseInt(String.valueOf(fr.getLocationId())));
+//                Camera c = cameraService.getCameraById(Integer.parseInt(String.valueOf(fr.getLocationId())));
                 param.setIp(c.getCameraIp());
                 param.setPort(c.getCameraPort());
+
+
 //                param.setChannel(new NativeLong(0));
                 param.setAccount("admin");
                 param.setPassword("yspjd_c608");
@@ -64,7 +66,7 @@ public class VideoFrameSchedulerController {
                 param.setDirectory(directory);
                 task.setParam(param);
                 task.setTime(start);
-                CameraTask ct = cameraTaskService.getCameraTaskByOpts(c.getCameraId(), fr.getJobType());
+                CameraTask ct = cameraTaskService.getCameraTaskByOpts(Integer.parseInt(String.valueOf(fr.getLocationId())), fr.getJobType());
                 task.setRtspCmd(ct.getRtspCmd());
                 if (i == 0) {
                     task.setFlag("start");

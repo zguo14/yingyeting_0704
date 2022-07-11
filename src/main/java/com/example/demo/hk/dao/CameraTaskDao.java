@@ -12,7 +12,7 @@ public interface CameraTaskDao {
     String query =
             "select " + "id_, camera_id_, task_type_, channel_, rtsp_cmd_" +
                     " from " + "camera_task_" +
-                    " where " + "camera_id_ = #{cameraId} and task_type_ = #{taskType}";
+                    " where " + "camera_id_ = #{locationId} and task_type_ = #{taskType}";
     @Select(query)
     @Results({
             @Result(column="id_", property="id"),
@@ -22,7 +22,7 @@ public interface CameraTaskDao {
             @Result(column="rtsp_cmd_" ,property="rtspCmd"),
 
     })
-    CameraTask getCameraTaskByOpts(int cameraId, String taskType);
+    CameraTask getCameraTaskByOpts(int locationId, String taskType);
 
 
 }
